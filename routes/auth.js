@@ -1,0 +1,13 @@
+const express = require('express');
+const router = express.Router();
+const { register, login, refresh } = require('../controllers/authController');
+
+router.post("/",async (req, res) => {
+    res.sendStatus(404);
+});
+// ตรวจสอบว่าฟังก์ชันเหล่านี้มีการกำหนดและไม่เป็น undefined
+router.post('/register', register);
+router.post('/login', login);
+router.post('/refresh', refresh);
+
+module.exports = router;
