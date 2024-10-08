@@ -1,4 +1,5 @@
 const Product = require("../models/product");
+const { verifyAdmin } = require('../middleware/authMiddleware');
 
 // ดึงข้อมูลทั้งหมดของผลิตภัณฑ์
 exports.getProduct = async (req, res) => {
@@ -13,9 +14,10 @@ exports.getProduct = async (req, res) => {
 // เพิ่มผลิตภัณฑ์ใหม่
 exports.createProduct = async (req, res) => {
   const { name, img, num, status } = req.body;
+
+  const product = new Product({name, img, num, status})
   try {
-    const newProduct = new Product({ name, img, num, status });
-    await newProduct.save();
+    const newProduct = await product.save();
     res.status(201).json(newProduct);
   } catch (error) {
     res.status(500).json({ message: error.message });

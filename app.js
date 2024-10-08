@@ -2,9 +2,11 @@ const express = require("express");
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const app = express();
+const cors = require("cors"); // เพิ่มการ import cors+
 
 dotenv.config();
 app.use(express.json());
+app.use(cors()); // ใช้ cors middleware
 
 mongoose
   .connect(process.env.MONGO_DB_URI, {})
@@ -12,7 +14,7 @@ mongoose
   .catch((err) => console.log(err));
 
 const productRoute = require("./routes/product");
-app.use("/api/product", productRoute);
+app.use("/api/", productRoute);
 
 const authRoute = require("./routes/auth");
 app.use("/api/auth", authRoute);
