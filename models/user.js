@@ -6,7 +6,7 @@ const userSchema = new mongoose.Schema({
   name: { type: String, require: true },
   email: { type: String, require: true },
   tel: { type: String, require: true },
-  role: { type: String, require: false } // เพิ่ม field role
+  role: { type: String, enum: ["requester", "approver"], default: "requester" } // แยกประเภทผู้ใช้
 },
 { timeseries: true, versionKry: false }
 );

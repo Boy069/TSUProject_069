@@ -13,9 +13,14 @@ exports.getProduct = async (req, res) => {
 
 // เพิ่มผลิตภัณฑ์ใหม่
 exports.createProduct = async (req, res) => {
-  const { name, img, num, status } = req.body;
+  const { name, serialNumber, img, num, status } = req.body;
 
-  const product = new Product({name, img, num, status})
+  // ตรวจสอบข้อมูลที่จำเป็น
+  if (!name || !serialNumber || num === undefined) {
+    return res.status(400).json({ message: "Name, serialNumber, and num are required." });
+  }
+
+  const product = new Product({ name, serialNumber, img, num, status });
   try {
     const newProduct = await product.save();
     res.status(201).json(newProduct);

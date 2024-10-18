@@ -7,7 +7,7 @@ exports.register = async (req, res) => {
   const { username, password, name, email, tel, role } = req.body;
 
   // ตรวจสอบบทบาทที่ป้อนเข้ามา
-  const validRoles = ["user", "admin"];
+  const validRoles = ["requester", "approver"];
   if (role && !validRoles.includes(role)) {
     return res.status(400).send("Invalid role");
   }
@@ -20,10 +20,10 @@ exports.register = async (req, res) => {
       name,
       email,
       tel,
-      role: role || 'user', // ใช้บทบาท 'user' เป็นค่าเริ่มต้น
+      role: role || 'requester', // ใช้บทบาท 'requester' เป็นค่าเริ่มต้น
     });
     await user.save();
-    res.status(201).send("User registered");
+    res.status(201).send("User registered successfully");
   } catch (err) {
     res.status(400).send(err.message);
   }
@@ -36,18 +36,29 @@ exports.login = async (req, res) => {
     if (!tmpuser) return res.status(400).send("User not found");
     const isMatch = await bcrypt.compare(password, tmpuser.password);
     if (!isMatch) return res.status(400).send("Invalid credentials");
-    const role = await (tmpuser.role);
+    const role = tmpuser.role; // ไม่จำเป็นต้องใช้ await ที่นี่
     if (!role) return res.status(400).send("Role not found");
 
+    // สร้าง accessToken โดยรวม role ใน payload
     const accessToken = jwt.sign(
-      { userId: tmpuser._id}, // เพิ่มข้อมูล role ใน payload
+      { userId: tmpuser._id, role: role }, // เพิ่มข้อมูล role ใน payload
       process.env.ACCESS_TOKEN_SECRET,
-      { expiresIn: "15m" } // แก้ไขเวลาหมดอายุให้ถูกต้อง
+      { expiresIn: "15m" } // เวลาหมดอายุของ accessToken
     );
+    // สร้าง refreshToken
     const refreshToken = jwt.sign(
-      { userId: tmpuser._id },
+      { userId: tmpuser._id, role: role }, // เพิ่มข้อมูล role ใน payload
       process.env.REFRESH_TOKEN_SECRET
     );
+    // const accessToken = jwt.sign(
+    //   { userId: tmpuser._id}, // เพิ่มข้อมูล role ใน payload
+    //   process.env.ACCESS_TOKEN_SECRET,
+    //   { expiresIn: "15m" } // แก้ไขเวลาหมดอายุให้ถูกต้อง
+    // );
+    // const refreshToken = jwt.sign(
+    //   { userId: tmpuser._id },
+    //   process.env.REFRESH_TOKEN_SECRET
+    // );
     res.json({user: tmpuser, accessToken, refreshToken, role});
   } catch (err) {
     res.status(500).send(err.message);

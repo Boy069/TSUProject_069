@@ -1,9 +1,9 @@
 const jwt = require('jsonwebtoken');
-
-// ตรวจสอบสิทธิ์การเข้าถึง
 const dotenv = require('dotenv');
+
 dotenv.config();
 
+// ตรวจสอบสิทธิ์การเข้าถึง
 function authenticateToken(req, res, next){
     const authHeader = req.headers["authorization"];
     const token = authHeader && authHeader.split(" ")[1];

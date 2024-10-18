@@ -1,0 +1,8 @@
+console.log("Connecting to MongoDB...");
+mongoose.connect(process.env.MONGO_DB_URI, {})
+  .then(() => {
+    console.log("MONGO DB connected");
+  })
+  .catch((err) => {
+    console.error("MongoDB connection error:", err);
+  });
